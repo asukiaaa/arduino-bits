@@ -27,6 +27,18 @@ uint16_t readUint16FromBytes(const uint8_t *bytes,
   }
 }
 
+void assignUint16ToBytesFromFloatWithDigitUnderPoint(
+    uint8_t *bytes, float val, int numDigitUnderPoint,
+    ArrOrder order = ArrOrder::HighFirst) {
+  assignUint16ToBytes(bytes, val * pow(10, numDigitUnderPoint), order);
+}
+
+float readUint16FromBytesAsFloatWithDigitUnderPoint(
+    const uint8_t *bytes, int numDigitUnderPoint,
+    ArrOrder order = ArrOrder::HighFirst) {
+  return readUint16FromBytes(bytes, order) / pow(10, numDigitUnderPoint);
+}
+
 void assignUint32ToBytes(uint8_t *bytes, uint32_t u32,
                          ArrOrder order = ArrOrder::HighFirst) {
   if (order == ArrOrder::LowFirst) {
