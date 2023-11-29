@@ -18,7 +18,7 @@ void assignUint16ToBytes(uint8_t *bytes, uint16_t u16,
   }
 }
 
-uint16_t readUint16FromBytes(uint8_t *bytes,
+uint16_t readUint16FromBytes(const uint8_t *bytes,
                              ArrOrder order = ArrOrder::HighFirst) {
   if (order == ArrOrder::LowFirst) {
     return (uint16_t)bytes[1] << 8 | bytes[0];
@@ -42,7 +42,7 @@ void assignUint32ToBytes(uint8_t *bytes, uint32_t u32,
   }
 }
 
-uint32_t readUint32FromBytes(uint8_t *bytes,
+uint32_t readUint32FromBytes(const uint8_t *bytes,
                              ArrOrder order = ArrOrder::HighFirst) {
   if (order == ArrOrder::LowFirst) {
     return (uint32_t)bytes[3] << (8 * 3) | (uint32_t)bytes[2] << (8 * 2) |
