@@ -65,16 +65,21 @@ uint32_t readUint32FromBytes(const uint8_t *bytes,
   }
 }
 
-void assignUint32ToBytesFromFloatWithDigitUnderPoint(
-    uint8_t *bytes, float val, int numDigitUnderPoint,
-    ArrOrder order = ArrOrder::HighFirst) {
-  assignUint32ToBytes(bytes, round(val * pow(10, numDigitUnderPoint)), order);
+typedef union {
+  float value;
+  byte bytes[4];
+} UnionFloat;
+
+void assignUint32ToBytesFromFloat(uint8_t *bytes, float val) {
+  UnionFloat uf;
+  uf.value = val;
+  memcpy(bytes, uf.bytes, 4);
 }
 
-float readUint32FromBytesAsFloatWithDigitUnderPoint(
-    const uint8_t *bytes, int numDigitUnderPoint,
-    ArrOrder order = ArrOrder::HighFirst) {
-  return readUint32FromBytes(bytes, order) / pow(10, numDigitUnderPoint);
+float readUint32FromBytesAsFloat(const uint8_t *bytes) {
+  UnionFloat uf;
+  memcpy(uf.bytes, bytes, 4);
+  return uf.value;
 }
 
 bool isBitTrue(uint8_t byteData, uint8_t position) {
