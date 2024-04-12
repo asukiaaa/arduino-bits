@@ -90,4 +90,52 @@ void setBitTrue(uint8_t *byteData, uint8_t position) {
   *byteData |= 1 << position;
 }
 
+class InfoFloatValNullable3Bytes {
+ public:
+  InfoFloatValNullable3Bytes(size_t numDigitUnderPoint)
+      : digitUnderPoint(numDigitUnderPoint) {}
+
+  void toBytes(uint8_t *bytes) const {
+    if (used) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint16ToBytesFromFloatWithDigitUnderPoint(
+        &bytes[1], val, digitUnderPoint);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    used = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint16FromBytesAsFloatWithDigitUnderPoint(
+        &bytes[1], digitUnderPoint);
+  }
+
+  void setValue(float val) {
+    used = true;
+    this->val = val;
+  }
+
+  void clear() {
+    used = false;
+    val = 0;
+  }
+
+  float getVal(float valWhenBlank) { return used ? val : valWhenBlank; }
+  bool isUsed() { return used; }
+
+  String toStr(String labelWhenBlank) const {
+    if (used) {
+      return String(val, digitUnderPoint);
+    } else {
+      return labelWhenBlank;
+    }
+  }
+
+  static const size_t lenBytes = 3;
+  const size_t digitUnderPoint = 2;
+
+ protected:
+  bool used;
+
+ private:
+  float val;
+};
+
 }  // namespace bits_asukiaaa
