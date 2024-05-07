@@ -90,6 +90,10 @@ void setBitTrue(uint8_t *byteData, uint8_t position) {
   *byteData |= 1 << position;
 }
 
+void setBitU16True(uint16_t *byteData, size_t position) {
+  *byteData |= (uint16_t)1 << position;
+}
+
 class InfoFloatValNullable3Bytes {
  public:
   InfoFloatValNullable3Bytes(size_t numDigitUnderPoint)
