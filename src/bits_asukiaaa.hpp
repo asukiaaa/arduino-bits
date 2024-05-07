@@ -94,7 +94,53 @@ void setBitU16True(uint16_t *byteData, size_t position) {
   *byteData |= (uint16_t)1 << position;
 }
 
-class InfoFloatValNullable3Bytes {
+class InfoNullableBase {
+ public:
+  bool isUsed() { return used; }
+
+ protected:
+  bool used;
+};
+
+class InfoIntNullable3Bytes : public InfoNullableBase {
+ public:
+  void toBytes(uint8_t *bytes) const {
+    if (used) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint16ToBytes(&bytes[1], val);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    used = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint16FromBytes(&bytes[1]);
+  }
+
+  void setValue(float val) {
+    used = true;
+    this->val = val;
+  }
+
+  void clear() {
+    used = false;
+    val = 0;
+  }
+
+  float getVal(uint16_t valWhenBlank) { return used ? val : valWhenBlank; }
+
+  String toStr(String labelWhenBlank) const {
+    if (used) {
+      return String(val);
+    } else {
+      return labelWhenBlank;
+    }
+  }
+
+  static const size_t lenBytes = 3;
+
+ private:
+  uint16_t val;
+};
+
+class InfoFloatValNullable3Bytes : public InfoNullableBase {
  public:
   InfoFloatValNullable3Bytes(size_t numDigitUnderPoint)
       : digitUnderPoint(numDigitUnderPoint) {}
@@ -122,7 +168,6 @@ class InfoFloatValNullable3Bytes {
   }
 
   float getVal(float valWhenBlank) { return used ? val : valWhenBlank; }
-  bool isUsed() { return used; }
 
   String toStr(String labelWhenBlank) const {
     if (used) {
@@ -134,9 +179,6 @@ class InfoFloatValNullable3Bytes {
 
   static const size_t lenBytes = 3;
   const size_t digitUnderPoint = 2;
-
- protected:
-  bool used;
 
  private:
   float val;
