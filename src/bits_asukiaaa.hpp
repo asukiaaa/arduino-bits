@@ -140,9 +140,9 @@ class InfoIntNullable3Bytes : public InfoNullableBase {
   uint16_t val;
 };
 
-class InfoFloatValNullable3Bytes : public InfoNullableBase {
+class InfoFloatNullable3Bytes : public InfoNullableBase {
  public:
-  InfoFloatValNullable3Bytes(size_t numDigitUnderPoint)
+  InfoFloatNullable3Bytes(size_t numDigitUnderPoint)
       : digitUnderPoint(numDigitUnderPoint) {}
 
   void toBytes(uint8_t *bytes) const {
