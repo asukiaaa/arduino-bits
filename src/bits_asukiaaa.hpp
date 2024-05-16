@@ -140,7 +140,54 @@ class InfoIntNullable3Bytes : public InfoNullableBase {
   uint16_t val;
 };
 
-class InfoFloatNullable3Bytes : public InfoNullableBase {
+class InfoFloatNullableBase : public InfoNullableBase {
+ public:
+  void setValue(float val) {
+    used = true;
+    this->val = val;
+  }
+
+  void clear() {
+    used = false;
+    val = 0;
+  }
+
+  float getVal(float valWhenBlank) const { return used ? val : valWhenBlank; }
+
+ protected:
+  float val;
+};
+
+class InfoFloatNullable : public InfoFloatNullableBase {
+ public:
+  void toBytes(uint8_t *bytes) const {
+    if (used) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint32ToBytesFromFloat(&bytes[1], val);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    used = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint32FromBytesAsFloat(&bytes[1]);
+  }
+
+  InfoFloatNullable &operator=(const InfoFloatNullableBase &other) {
+    this->used = other.isUsed();
+    this->val = other.getVal(-1);
+    return *this;
+  }
+
+  String toStr(String labelWhenBlank) const {
+    if (used) {
+      return String(val);
+    } else {
+      return labelWhenBlank;
+    }
+  }
+
+  static const size_t lenBytes = 5;
+};
+
+class InfoFloatNullable3Bytes : public InfoFloatNullableBase {
  public:
   InfoFloatNullable3Bytes(size_t numDigitUnderPoint)
       : digitUnderPoint(numDigitUnderPoint) {}
@@ -157,18 +204,6 @@ class InfoFloatNullable3Bytes : public InfoNullableBase {
         &bytes[1], digitUnderPoint);
   }
 
-  void setValue(float val) {
-    used = true;
-    this->val = val;
-  }
-
-  void clear() {
-    used = false;
-    val = 0;
-  }
-
-  float getVal(float valWhenBlank) { return used ? val : valWhenBlank; }
-
   String toStr(String labelWhenBlank) const {
     if (used) {
       return String(val, digitUnderPoint);
@@ -177,11 +212,14 @@ class InfoFloatNullable3Bytes : public InfoNullableBase {
     }
   }
 
-  static const size_t lenBytes = 3;
-  const size_t digitUnderPoint = 2;
+  InfoFloatNullable3Bytes &operator=(const InfoFloatNullableBase &other) {
+    this->used = other.isUsed();
+    this->val = other.getVal(-1);
+    return *this;
+  }
 
- private:
-  float val;
+  static const size_t lenBytes = 3;
+  const size_t digitUnderPoint;
 };
 
 }  // namespace bits_asukiaaa
