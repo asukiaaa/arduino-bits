@@ -102,7 +102,7 @@ class InfoNullableBase {
   bool used;
 };
 
-class InfoIntNullable3Bytes : public InfoNullableBase {
+class InfoInt16Nullable : public InfoNullableBase {
  public:
   void toBytes(uint8_t *bytes) const {
     if (used) setBitTrue(&bytes[0], 0);
