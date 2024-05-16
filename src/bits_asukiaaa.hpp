@@ -173,8 +173,10 @@ class InfoFloatNullable : public InfoFloatNullableBase {
   }
 
   InfoFloatNullable &operator=(const InfoFloatNullableBase &other) {
-    this->used = other.isUsed();
-    this->val = other.getVal(-1);
+    if (this != &other) {
+      this->used = other.isUsed();
+      this->val = other.getVal(-1);
+    }
     return *this;
   }
 
@@ -215,8 +217,10 @@ class InfoFloatNullable3Bytes : public InfoFloatNullableBase {
   }
 
   InfoFloatNullable3Bytes &operator=(const InfoFloatNullableBase &other) {
-    this->used = other.isUsed();
-    this->val = other.getVal(-1);
+    if (this != &other) {
+      this->used = other.isUsed();
+      this->val = other.getVal(-1);
+    }
     return *this;
   }
 
