@@ -97,6 +97,8 @@ void setBitU16True(uint16_t *byteData, size_t position) {
 class InfoNullableBase {
  public:
   bool isUsed() const { return used; }
+  bool isNull() const { return !used; }
+  bool isNotNull() const { return used; }
 
  protected:
   bool used;
