@@ -96,7 +96,7 @@ void setBitU16True(uint16_t *byteData, size_t position) {
 
 class InfoNullableBase {
  public:
-  bool isUsed() { return used; }
+  bool isUsed() const { return used; }
 
  protected:
   bool used;
@@ -124,7 +124,9 @@ class InfoIntNullable3Bytes : public InfoNullableBase {
     val = 0;
   }
 
-  float getVal(uint16_t valWhenBlank) { return used ? val : valWhenBlank; }
+  float getVal(uint16_t valWhenBlank) const {
+    return used ? val : valWhenBlank;
+  }
 
   String toStr(String labelWhenBlank) const {
     if (used) {
