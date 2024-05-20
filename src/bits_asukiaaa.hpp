@@ -210,6 +210,11 @@ class InfoFloatNullable3Bytes : public InfoFloatNullableBase {
         &bytes[1], digitUnderPoint);
   }
 
+  void copyValue(const InfoFloatNullableBase &other) {
+    used = other.isUsed();
+    val = other.getVal(-1);
+  }
+
   String toStr(String labelWhenBlank) const {
     if (used) {
       return String(val, digitUnderPoint);
