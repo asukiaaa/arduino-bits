@@ -82,12 +82,22 @@ float readUint32FromBytesAsFloat(const uint8_t *bytes) {
   return uf.value;
 }
 
-bool isBitTrue(uint8_t byteData, uint8_t position) {
+bool isBitTrue(uint8_t byteData, size_t position) {
   return ((byteData >> position) & 0b1) == 1;
 }
 
-void setBitTrue(uint8_t *byteData, uint8_t position) {
+template <class BitType>
+bool isBitTrue(BitType byteData, size_t position) {
+  return ((byteData >> position) & 0b1) == 1;
+}
+
+void setBitTrue(uint8_t *byteData, size_t position) {
   *byteData |= 1 << position;
+}
+
+template <class BitType>
+void setBitTrue(BitType *byteData, size_t position) {
+  *byteData |= (BitType)1 << position;
 }
 
 void setBitU16True(uint16_t *byteData, size_t position) {
