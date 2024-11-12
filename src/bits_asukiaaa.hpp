@@ -245,4 +245,51 @@ class InfoFloatNullable3Bytes : public InfoFloatNullableBase {
   const size_t digitUnderPoint;
 };
 
+template <typename T>
+class NullableValTemplate {
+ public:
+  NullableValTemplate() {}
+  NullableValTemplate(T v) { setVal(v); }
+  T getVal(T valIfNotAvairable) const {
+    return avairable ? val : valIfNotAvairable;
+  }
+  bool isAvairable() const { return avairable; }
+  void clear() { avairable = false; }
+  void setVal(T v) {
+    val = v;
+    avairable = true;
+  }
+  void writeValIfAvairable(T *v) const {
+    if (avairable) {
+      *v = val;
+    }
+  }
+  void writeValIfAvairable(NullableValTemplate<T> *other) const {
+    if (avairable) {
+      other->setVal(val);
+    }
+  }
+  // NullableValTemplate<T>& operator=(T v) {
+  //   setVal(v);
+  //   return *this;
+  // }
+  bool operator==(T v) { return avairable && v == val; }
+  bool operator!=(T v) { return avairable && v != val; }
+  bool operator==(const NullableValTemplate<T> &other) {
+    return other.avairable == avairable && (!avairable || other.val == val);
+  }
+  bool operator!=(const NullableValTemplate<T> &other) {
+    return !(this == other);
+  }
+  void overWriteIfAvairable(const NullableValTemplate<T> &other) {
+    if (other.avairable) {
+      setVal(other.val);
+    }
+  }
+
+ protected:
+  T val;
+  bool avairable = false;
+};
+
 }  // namespace bits_asukiaaa
