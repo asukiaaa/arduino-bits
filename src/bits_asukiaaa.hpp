@@ -43,14 +43,14 @@ void assignUint32ToBytes(uint8_t *bytes, uint32_t u32,
                          ArrOrder order = ArrOrder::HighFirst) {
   if (order == ArrOrder::LowFirst) {
     bytes[0] = u32 & 0xff;
-    bytes[1] = (u32 >> 8 * 1) & 0xff;
-    bytes[2] = (u32 >> 8 * 2) & 0xff;
-    bytes[3] = (u32 >> 8 * 3) & 0xff;
+    bytes[1] = (u32 >> (8 * 1)) & 0xff;
+    bytes[2] = (u32 >> (8 * 2)) & 0xff;
+    bytes[3] = (u32 >> (8 * 3)) & 0xff;
   } else {
     bytes[3] = u32 & 0xff;
-    bytes[2] = (u32 >> 8 * 1) & 0xff;
-    bytes[1] = (u32 >> 8 * 2) & 0xff;
-    bytes[0] = (u32 >> 8 * 3) & 0xff;
+    bytes[2] = (u32 >> (8 * 1)) & 0xff;
+    bytes[1] = (u32 >> (8 * 2)) & 0xff;
+    bytes[0] = (u32 >> (8 * 3)) & 0xff;
   }
 }
 
@@ -63,6 +63,24 @@ uint32_t readUint32FromBytes(const uint8_t *bytes,
     return (uint32_t)bytes[0] << (8 * 3) | (uint32_t)bytes[1] << (8 * 2) |
            (uint32_t)bytes[2] << (8 * 1) | bytes[3];
   }
+}
+
+void assignUint64ToBytes(uint8_t *bytes, uint64_t u64,
+                         ArrOrder order = ArrOrder::HighFirst) {
+  for (uint8_t i = 0; i < 8; ++i) {
+    uint8_t indexToShift = order == ArrOrder::LowFirst ? i : 7 - i;
+    bytes[i] = u64 >> (8 * indexToShift) & 0xff;
+  }
+}
+
+uint64_t readUint64FromBytes(const uint8_t *bytes,
+                             ArrOrder order = ArrOrder::HighFirst) {
+  uint64_t val = 0;
+  for (uint8_t i = 0; i < 8; ++i) {
+    uint8_t indexToShift = order == ArrOrder::LowFirst ? i : 7 - i;
+    val |= (uint64_t)bytes[i] << (8 * indexToShift);
+  }
+  return val;
 }
 
 typedef union {
@@ -80,6 +98,23 @@ float readUint32FromBytesAsFloat(const uint8_t *bytes) {
   UnionFloat uf;
   memcpy(uf.bytes, bytes, 4);
   return uf.value;
+}
+
+typedef union {
+  double value;
+  byte bytes[8];
+} UnionDouble;
+
+void assignUint64ToBytesFromDouble(uint8_t *bytes, double val) {
+  UnionDouble ud;
+  ud.value = val;
+  memcpy(bytes, ud.bytes, 8);
+}
+
+double readUint64FromBytesAsDouble(const uint8_t *bytes) {
+  UnionDouble ud;
+  memcpy(ud.bytes, bytes, 8);
+  return ud.value;
 }
 
 bool isBitTrue(uint8_t byteData, size_t position) {
