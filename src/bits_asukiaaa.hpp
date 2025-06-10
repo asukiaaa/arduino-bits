@@ -291,11 +291,22 @@ class NullableValTemplate {
     return avairable ? val : valIfNotAvairable;
   }
   bool isAvairable() const { return avairable; }
+  bool isNull() const { return !avairable; }
+  bool isNotNull() const { return avairable; }
   void clear() { avairable = false; }
   void setVal(T v) {
     val = v;
     avairable = true;
   }
+  void setVal(const NullableValTemplate<T> &other) {
+    if (other.isAvairable()) {
+      val = other.getVal(0);
+    } else {
+      this->clear();
+    }
+  }
+  void setValue(T v) { setVal(v); }
+  void setValue(const NullableValTemplate<T> &other) { setVal(other); }
   void writeValIfAvairable(T *v) const {
     if (avairable) {
       *v = val;
@@ -306,10 +317,14 @@ class NullableValTemplate {
       other->setVal(val);
     }
   }
-  // NullableValTemplate<T>& operator=(T v) {
-  //   setVal(v);
-  //   return *this;
-  // }
+  NullableValTemplate<T> &operator=(T v) {
+    setVal(v);
+    return *this;
+  }
+  NullableValTemplate<T> &operator=(const NullableValTemplate<T> &v) {
+    setVal(v);
+    return *this;
+  }
   bool operator==(T v) { return avairable && v == val; }
   bool operator!=(T v) { return avairable && v != val; }
   bool operator==(const NullableValTemplate<T> &other) {
@@ -321,6 +336,13 @@ class NullableValTemplate {
   void overWriteIfAvairable(const NullableValTemplate<T> &other) {
     if (other.avairable) {
       setVal(other.val);
+    }
+  }
+  String toStr(String labelWhenBlank) const {
+    if (avairable) {
+      return String(val);
+    } else {
+      return labelWhenBlank;
     }
   }
 
