@@ -141,147 +141,6 @@ void setBitU16True(uint16_t *byteData, size_t position) {
   *byteData |= (uint16_t)1 << position;
 }
 
-class InfoNullableBase {
- public:
-  bool isUsed() const { return used; }
-  bool isNull() const { return !used; }
-  bool isNotNull() const { return used; }
-
- protected:
-  bool used;
-};
-
-class InfoInt16Nullable : public InfoNullableBase {
- public:
-  void toBytes(uint8_t *bytes) const {
-    if (used) setBitTrue(&bytes[0], 0);
-    bits_asukiaaa::assignUint16ToBytes(&bytes[1], val);
-  }
-
-  void updateFromBytes(const uint8_t *bytes) {
-    used = isBitTrue(bytes[0], 0);
-    val = bits_asukiaaa::readUint16FromBytes(&bytes[1]);
-  }
-
-  void setValue(float val) {
-    used = true;
-    this->val = val;
-  }
-
-  void clear() {
-    used = false;
-    val = 0;
-  }
-
-  float getVal(uint16_t valWhenBlank) const {
-    return used ? val : valWhenBlank;
-  }
-
-  String toStr(String labelWhenBlank) const {
-    if (used) {
-      return String(val);
-    } else {
-      return labelWhenBlank;
-    }
-  }
-
-  static const size_t lenBytes = 3;
-
- private:
-  uint16_t val;
-};
-
-class InfoFloatNullableBase : public InfoNullableBase {
- public:
-  void setValue(float val) {
-    used = true;
-    this->val = val;
-  }
-
-  void clear() {
-    used = false;
-    val = 0;
-  }
-
-  float getVal(float valWhenBlank) const { return used ? val : valWhenBlank; }
-
- protected:
-  float val;
-};
-
-class InfoFloatNullable : public InfoFloatNullableBase {
- public:
-  void toBytes(uint8_t *bytes) const {
-    if (used) setBitTrue(&bytes[0], 0);
-    bits_asukiaaa::assignUint32ToBytesFromFloat(&bytes[1], val);
-  }
-
-  void updateFromBytes(const uint8_t *bytes) {
-    used = isBitTrue(bytes[0], 0);
-    val = bits_asukiaaa::readUint32FromBytesAsFloat(&bytes[1]);
-  }
-
-  InfoFloatNullable &operator=(const InfoFloatNullableBase &other) {
-    if (this != &other) {
-      this->used = other.isUsed();
-      this->val = other.getVal(-1);
-    }
-    return *this;
-  }
-
-  String toStr(String labelWhenBlank) const {
-    if (used) {
-      return String(val);
-    } else {
-      return labelWhenBlank;
-    }
-  }
-
-  static const size_t lenBytes = 5;
-};
-
-class InfoFloatNullable3Bytes : public InfoFloatNullableBase {
- public:
-  InfoFloatNullable3Bytes(size_t numDigitUnderPoint)
-      : digitUnderPoint(numDigitUnderPoint) {}
-
-  void toBytes(uint8_t *bytes) const {
-    if (used) setBitTrue(&bytes[0], 0);
-    bits_asukiaaa::assignUint16ToBytesFromFloatWithDigitUnderPoint(
-        &bytes[1], val, digitUnderPoint);
-  }
-
-  void updateFromBytes(const uint8_t *bytes) {
-    used = isBitTrue(bytes[0], 0);
-    val = bits_asukiaaa::readUint16FromBytesAsFloatWithDigitUnderPoint(
-        &bytes[1], digitUnderPoint);
-  }
-
-  void copyValue(const InfoFloatNullableBase &other) {
-    used = other.isUsed();
-    val = other.getVal(-1);
-  }
-
-  String toStr(String labelWhenBlank) const {
-    if (used) {
-      return String(val, digitUnderPoint);
-    } else {
-      return labelWhenBlank;
-    }
-  }
-
-  InfoFloatNullable3Bytes &operator=(const InfoFloatNullableBase &other) {
-    if (this != &other) {
-      this->used = other.isUsed();
-      this->val = other.getVal(-1);
-    }
-    return *this;
-  }
-
-  static const size_t lenBytes = 3;
-  const size_t digitUnderPoint;
-};
-
 template <typename T>
 class NullableValTemplate {
  public:
@@ -350,5 +209,115 @@ class NullableValTemplate {
   T val;
   bool avairable = false;
 };
+
+template <typename T>
+class NullableValTemplateWithBytes : public NullableValTemplate<T> {
+ public:
+  virtual void toBytes(uint8_t *bytes) const = 0;
+  virtual void updateFromBytes(const uint8_t *bytes) = 0;
+};
+
+class NInt16 : public NullableValTemplateWithBytes<int16_t> {
+ public:
+  void toBytes(uint8_t *bytes) const {
+    if (avairable) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint16ToBytes(&bytes[1], (uint16_t)val);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    avairable = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint16FromBytes(&bytes[1]);
+  }
+
+  static const size_t lenBytes = 3;
+};
+
+class NUint16 : public NullableValTemplateWithBytes<uint16_t> {
+ public:
+  void toBytes(uint8_t *bytes) const {
+    if (avairable) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint16ToBytes(&bytes[1], val);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    avairable = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint16FromBytes(&bytes[1]);
+  }
+
+  static const size_t lenBytes = 3;
+};
+
+class NInt32 : public NullableValTemplateWithBytes<int32_t> {
+ public:
+  void toBytes(uint8_t *bytes) const {
+    if (avairable) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint32ToBytes(&bytes[1], (uint32_t)val);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    avairable = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint32FromBytes(&bytes[1]);
+  }
+
+  static const size_t lenBytes = sizeof(uint32_t) + 1;
+};
+
+class NUint32 : public NullableValTemplateWithBytes<uint32_t> {
+ public:
+  void toBytes(uint8_t *bytes) const {
+    if (avairable) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint32ToBytes(&bytes[1], val);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    avairable = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint32FromBytes(&bytes[1]);
+  }
+
+  static const size_t lenBytes = sizeof(int32_t) + 1;
+};
+
+class NFloat : public NullableValTemplateWithBytes<float> {
+ public:
+  void toBytes(uint8_t *bytes) const {
+    if (avairable) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint32ToBytesFromFloat(&bytes[1], val);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    avairable = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint32FromBytesAsFloat(&bytes[1]);
+  }
+
+  static const size_t lenBytes = sizeof(float) + 1;
+};
+
+class NFloat3Bytes : public NullableValTemplateWithBytes<float> {
+ public:
+  NFloat3Bytes(size_t numDigitUnderPoint)
+      : digitUnderPoint(numDigitUnderPoint) {}
+
+  void toBytes(uint8_t *bytes) const {
+    if (avairable) setBitTrue(&bytes[0], 0);
+    bits_asukiaaa::assignUint16ToBytesFromFloatWithDigitUnderPoint(
+        &bytes[1], val, digitUnderPoint);
+  }
+
+  void updateFromBytes(const uint8_t *bytes) {
+    avairable = isBitTrue(bytes[0], 0);
+    val = bits_asukiaaa::readUint16FromBytesAsFloatWithDigitUnderPoint(
+        &bytes[1], digitUnderPoint);
+  }
+
+  static const size_t lenBytes = 3;
+  const size_t digitUnderPoint;
+};
+
+[[deprecated("Use NInt16 instead of InfoInt16Nullable.")]]
+typedef NInt16 InfoInt16Nullable;
+[[deprecated("Use NFloat instead of InfoFloatNullable.")]]
+typedef NFloat InfoFloatNullable;
+[[deprecated("Use NFloat3Bytes instead of InfoFloatNullable3Bytes.")]]
+typedef NFloat3Bytes InfoFloatNullable3Bytes;
 
 }  // namespace bits_asukiaaa
