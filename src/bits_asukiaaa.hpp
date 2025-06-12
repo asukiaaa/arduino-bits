@@ -160,6 +160,7 @@ class NullableValTemplate {
   void setVal(const NullableValTemplate<T> &other) {
     if (other.isAvairable()) {
       val = other.getVal(0);
+      avairable = true;
     } else {
       this->clear();
     }
@@ -215,6 +216,10 @@ class NullableValTemplateWithBytes : public NullableValTemplate<T> {
  public:
   virtual void toBytes(uint8_t *bytes) const = 0;
   virtual void updateFromBytes(const uint8_t *bytes) = 0;
+
+  using NullableValTemplate<T>::operator=;
+  using NullableValTemplate<T>::operator==;
+  using NullableValTemplate<T>::operator!=;
 };
 
 class NInt16 : public NullableValTemplateWithBytes<int16_t> {
@@ -230,6 +235,10 @@ class NInt16 : public NullableValTemplateWithBytes<int16_t> {
   }
 
   static const size_t lenBytes = 3;
+
+  using NullableValTemplate<int16_t>::operator=;
+  using NullableValTemplate<int16_t>::operator==;
+  using NullableValTemplate<int16_t>::operator!=;
 };
 
 class NUint16 : public NullableValTemplateWithBytes<uint16_t> {
@@ -245,6 +254,10 @@ class NUint16 : public NullableValTemplateWithBytes<uint16_t> {
   }
 
   static const size_t lenBytes = 3;
+
+  using NullableValTemplate<uint16_t>::operator=;
+  using NullableValTemplate<uint16_t>::operator==;
+  using NullableValTemplate<uint16_t>::operator!=;
 };
 
 class NInt32 : public NullableValTemplateWithBytes<int32_t> {
@@ -259,7 +272,11 @@ class NInt32 : public NullableValTemplateWithBytes<int32_t> {
     val = bits_asukiaaa::readUint32FromBytes(&bytes[1]);
   }
 
-  static const size_t lenBytes = sizeof(uint32_t) + 1;
+  static const size_t lenBytes = sizeof(int32_t) + 1;
+
+  using NullableValTemplate<int32_t>::operator=;
+  using NullableValTemplate<int32_t>::operator==;
+  using NullableValTemplate<int32_t>::operator!=;
 };
 
 class NUint32 : public NullableValTemplateWithBytes<uint32_t> {
@@ -275,6 +292,10 @@ class NUint32 : public NullableValTemplateWithBytes<uint32_t> {
   }
 
   static const size_t lenBytes = sizeof(int32_t) + 1;
+
+  using NullableValTemplate<uint32_t>::operator=;
+  using NullableValTemplate<uint32_t>::operator==;
+  using NullableValTemplate<uint32_t>::operator!=;
 };
 
 class NFloat : public NullableValTemplateWithBytes<float> {
@@ -290,6 +311,10 @@ class NFloat : public NullableValTemplateWithBytes<float> {
   }
 
   static const size_t lenBytes = sizeof(float) + 1;
+
+  using NullableValTemplate<float>::operator=;
+  using NullableValTemplate<float>::operator==;
+  using NullableValTemplate<float>::operator!=;
 };
 
 class NFloat3Bytes : public NullableValTemplateWithBytes<float> {
@@ -311,6 +336,10 @@ class NFloat3Bytes : public NullableValTemplateWithBytes<float> {
 
   static const size_t lenBytes = 3;
   const size_t digitUnderPoint;
+
+  using NullableValTemplate<float>::operator=;
+  using NullableValTemplate<float>::operator==;
+  using NullableValTemplate<float>::operator!=;
 };
 
 [[deprecated("Use NInt16 instead of InfoInt16Nullable.")]]

@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #include <bits_asukiaaa.hpp>
 
 void setup() { Serial.begin(9600); }
@@ -55,8 +57,27 @@ void convertDouble() {
   Serial.println("read " + String(valReceive));
 }
 
+void testNullable() {
+  bits_asukiaaa::NFloat valFloat0;
+  bits_asukiaaa::NFloat valFloat1;
+  bits_asukiaaa::NullableValTemplate<float> valFloat2;
+  bits_asukiaaa::NFloat valNone;
+
+  valFloat0 = 3.0;
+  valFloat1 = valFloat0;
+  valFloat2 = valFloat0;
+  Serial.println("valFloat0 " + valFloat0.toStr("none"));
+  Serial.println("valFloat1 " + valFloat1.toStr("none"));
+  Serial.println("valFloat3 " + valFloat1.toStr("none"));
+  Serial.println("val 0 and 1 is same? " +
+                 String(valFloat0 == valFloat1 ? "yes" : "no"));
+  Serial.println("val 0 and none is same? " +
+                 String(valFloat0 == valNone ? "yes" : "no"));
+}
+
 void loop() {
   convertUint64();
   convertDouble();
+  testNullable();
   delay(2000);
 }
